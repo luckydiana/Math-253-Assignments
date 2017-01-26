@@ -44,7 +44,7 @@ t2 <- task5y**2
 t3 <- t1 + t2
 
 sqtask5 <- t3**(1/2)
-task5pi <- sum((sqtask5 <= 1)/1000)* 4
+task5pi <- (sum(sqtask5 <= 1)/1000)* 4
 task5pi
 
 ```
