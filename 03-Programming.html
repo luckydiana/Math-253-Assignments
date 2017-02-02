@@ -165,9 +165,7 @@ Y_test &lt;- Test_data$Yield
 
 fhat_test &lt;- predict(Yield_mod2, newdata = Test_data)
 
-MSE_test &lt;- mean((Y_test - fhat_train))^2</code></pre>
-<pre><code>## Warning in Y_test - fhat_train: longer object length is not a multiple of
-## shorter object length</code></pre>
+MSE_test &lt;- mean((Y_test - fhat_test))^2</code></pre>
 </div>
 <div id="test-statements" class="section level2">
 <h2>Test statements</h2>

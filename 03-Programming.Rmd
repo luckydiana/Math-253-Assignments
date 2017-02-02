@@ -47,7 +47,7 @@ Y_test <- Test_data$Yield
 
 fhat_test <- predict(Yield_mod2, newdata = Test_data)
 
-MSE_test <- mean((Y_test - fhat_train))^2
+MSE_test <- mean((Y_test - fhat_test))^2
 ```
 
 ## Test statements
