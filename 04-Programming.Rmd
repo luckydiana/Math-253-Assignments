@@ -1,6 +1,42 @@
 # In-Class Programming Activity, Day 4
 
-Your work goes here ...
+## Diana Luc
+
+## Task 1
+```{r}
+plot(1, xlim = c(0,100), ylim = c(0,100), type = "n")
+
+## Task 2
+x1 <- c(0,0,100,100)
+y1 <- c(0,100,100,0)
+lines(x1,y1)
+
+
+x2 <- c(0,0,100,100,0)
+y2 <- c(0,100,100,0,0)
+lines(x2,y2)
+```
+
+## Task 3
+```{r}
+plot(1, xlim = c(0,100), ylim = c(0,100), type = "n")
+
+angles <- seq(0, 2 * pi, 0.1)
+x3 <- cos(angles)*40 + 50
+y3 <- sin(angles)*40 + 60
+polygon(x3,y3)
+```
+
+## Task 4
+```{r}
+plot(1, xlim = c(0,100), ylim = c(0,100), type = "n")
+
+angles <- seq(0, 2 * pi, 0.1)
+x4 <- cos(angles)*(40*abs(sin(angles))) + 25
+y4 <- sin(angles)*(40*abs(sin(angles))) + 40
+polygon(x4,y4, col = "tomato")
+```
+
 
 
 
