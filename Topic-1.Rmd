@@ -54,10 +54,6 @@ college <- read.csv("College.csv")
 
 ```{r}
 head(college[, 1:5])
-
-rownames <- college[, 1]
-college <- college[, -1]
-head(college[, 1:5])
 ```
 
 ```{r}
