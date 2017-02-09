@@ -1,2 +1,152 @@
 # Topic 1 Exercises
 
+## Diana Luc
+
+## Question 2.4.1
+a) A flexible model would be better because the sample size is large so a flexible model would fit the data better than an inflexible model. 
+
+b) A flexible model would be worse than an inflexible method because since the number of observations are small, a flexible model would over compensate and overfit the small number of points. 
+
+c) A flexible model would be better since the response is highly non-linear, a flexible model would be able to accomodate the variability in points and provide a better fit. 
+
+d) A flexible model would be worse because a flexible model would just continue to increase the variance whic his already high. 
+
+## Question 2.4.2
+a) This is a regression problem. We are interested in inference since we are looking for the output of CEO salary based on CEO firm's features. The n is the 500 top firms in the US. The p are 3 things: profit, industry, and number of employees.
+
+b) This is a classification problem. We are interested in predication since we're predicating whether this new product will be a successful or a failure. The n is the 20 similar products. The p are 13 things: priced charged, marketing budget, competetion price, and 10 other variables. 
+
+c) This is a regression problem. We are interested in predication since we're predicating the % change in the US Dollar. The n is 52 for the 52 weeks in a year. The p are 3 things: the % change in the US market, % change in the British Market, and % change in the German market. 
+
+## Question 2.4.3 
+b) For the squared bias curve, it starts out high when flexibility is low and slowly decreases because increases in flexibility lowers bias.  
+
+For the variance curve, it starts out low and slowly increase because an increase in flexibility increases the amount of variance there is because of overfitting.
+
+For the training error curve, it starts out high and slowly decreases as flexibility increases because when flexibility is increased the curve will fit the observed data more better. 
+
+For the test error curve, it's a U shape because it decreases a little when flexibility increases but then it starts to increase again because we're overfitting our data since at the point, this curves start to go back up, the training error curve is at a low which means overfitting is occuring. 
+
+For the Bayes / irreducible error curve, this curve is a constant line that is right below the test error curve because the test mean squared error should always be greater than the variance in the error.  
+
+## Question 2.4.6
+A parametric approach estimates a set of parameters since it already assumes a form for f while on the other hand a non-parametric approach requires a large number of observations to estimate f because there's is no assumed form for f. 
+
+Advantages of a parametric approach to regression or classification are the amount of observations and parameter needed. Only a few parameters are needed to model f and we don't need a large number of observations compared to the non-parametric approach. 
+
+Disadvantages of a parametric approach to regression or classification are the possibilities of estimating f wrong because since parametric approachs already assume a form of f, if that assumed form is wrong it could estimate f wrong. 
+
+## Question 2.4.7
+a) The distance for obs 1 is 3. For obs 2 is 2. For obs 3 is 3.2. For obs 4 is 2.2. For obs 5 is 1.4. For obs 6 is 1.7. 
+
+b) The predication for when K = 1 is obs 5 (Green) because its the closest neighbor. 
+
+c) For when K = 3, there's three observations that are close by (obs 2,5,6). Since two of those 3 are red, the predication for when K = 3 is red. 
+
+d) We expect the best value for K to be smaller because as K becomes larger, it will try to fit all the points thus becoming more linear. Therefore we need a smaller K to be more flexible for a non-linear decision boundary. 
+
+## Question 2.4.8
+```{r}
+library(ISLR)
+data(College, package = "ISLR")
+college <- read.csv("College.csv")
+```
+
+```{r}
+head(college[, 1:5])
+
+rownames <- college[, 1]
+college <- college[, -1]
+head(college[, 1:5])
+```
+
+```{r}
+summary(college)
+
+pairs(college[,1:10])
+
+plot(college$Private, college$Outstate, xlab ="Private College", ylab = "Out of State tuition in USD")
+```
+
+```{r}
+Elite = rep("No", nrow(college))
+Elite[college$Top10perc > 50] = "Yes"
+Elite = as.factor(Elite)
+college$Elite = Elite
+summary(college$Elite)
+```
+There are 78 elite colleges and 699 non elite colleges. 
+
+```{r}
+plot(college$Elite, college$Outstate, xlab = "Elite College", ylab = "Out of State tuition in USD")
+```
+
+```{r}
+par(mfrow = c(2,2))
+hist(college$Apps, col = 2, xlab = "Apps")
+hist(college$Grad.Rate, col = 3, xlab = "Grad rate")
+hist(college$PhD, col = 4, xlab = "PhD")
+hist(college$perc.alumni, col =5, xlab = "% alumni")
+```
+
+```{r}
+plot(college$Top10perc, college$Grad.Rate)
+#It seems that even though some colleges may have a lot of people from the top 10% of the H.S. class, it doesn't always correlate with a high college graduation rate. There's one college that doesn't have a lot of people from the top 10% but yet there is a 100% graduation rate. This is interesting because it shows that high school's performance doesn't dictate how you'll do in college
+```
+
+## Question 2.4.9
+```{r}
+#download.file("http://www-bcf.usc.edu/~gareth/ISL/Auto.csv", destfile = "Auto.csv")
+Auto <- read.csv("/home/local/MAC/dluc/Math-253-Assignment/Auto.csv", na.strings = "?")
+Auto <- na.omit(Auto)
+summary(Auto)
+```
+
+a) The quantitative variables are mpg, cylinders, displacement, horsepower, weight, acceleration, and year. The qualitative variables are origin and name. 
+
+```{r}
+range(Auto$mpg)
+range(Auto$cylinders)
+range(Auto$displacement)
+range(Auto$horsepower)
+range(Auto$weight)
+range(Auto$acceleration)
+range(Auto$year)
+```
+
+The range of mpg is: 9-46.6. Range of cylinders is 3-8. Range of displacement is 68-455. Range of horsepower is 46-230.Range of weight is 1613-5140. Range of acceleration is 8-24.8. Range of year is 70-82. 
+
+```{r}
+sapply(Auto[, 1:7], mean) #Tells the mean of each quantitative variable
+sapply(Auto[, 1:7], sd) #Tells the sd of each quantitative variable
+```
+
+```{r}
+newAuto = Auto[-(10:85),]
+dim(newAuto) == dim(Auto) - c(76,0)
+newAuto[9,] == Auto[9,]
+newAuto[10,] == Auto[86,]
+
+
+sapply(newAuto[, 1:7], range)
+
+sapply(newAuto[, 1:7], mean)
+
+sapply(newAuto[, 1:7], sd)
+```
+
+With the 10th to 85th observation removed, the new range, mean and sd of mpg is 11-46.6, 24.4, and 7.87. For cylinders it is 3-8, 5.37, and 1.65. For displacement it is 68-455, 187.24, and 99.68. For horsepower it is 46-230, 100.72, and 35.7. For weight it is 1649-4997, 2935.97, and 811.3. For acceleration it is 8.5-24.8, 15.73, and 2.69. For year it is 70-82, 77.15, and 3.11. 
+
+```{r}
+pairs(Auto)
+plot(Auto$mpg, Auto$cylinders)
+#We see that with lower cylinders cars, you get a higher mpg value. 
+plot(Auto$mpg, Auto$year)
+#We also see a weak trend that cars that are older have a lower mpg value than cars that are newer. 
+plot(Auto$mpg, Auto$origin)
+#Japanese cars tend to get better mpg than European or American cars.
+plot(Auto$mpg, Auto$horsepower)
+#The stronger the engine, the lower mpg it gets.
+```
+
+Based on the plots in the previous question, I believe that cylinders, year, origin, and horsepower could be use as predictors for mpg because for horsepower, it seems to have an inverse relationship with mpg. As for year, we see a positive trend that as the year increases, so does mpg. For origin, it shows that Japanese cars tend to have a better mpg value than European or American cars. For cylinders, it also has a somewhat inverse relationship where the lower cylinders provide a better mpg value. 
