@@ -22,8 +22,8 @@ lines(x2,y2)
 plot(1, xlim = c(0,100), ylim = c(0,100), type = "n")
 
 angles <- seq(0, 2 * pi, 0.1)
-x3 <- cos(angles)*40 + 50
-y3 <- sin(angles)*40 + 60
+x3 <- cos(angles)*20 + 50
+y3 <- sin(angles)*20 + 60
 polygon(x3,y3)
 ```
 
@@ -32,8 +32,8 @@ polygon(x3,y3)
 plot(1, xlim = c(0,100), ylim = c(0,100), type = "n")
 
 angles <- seq(0, 2 * pi, 0.1)
-x4 <- cos(angles)*(40*abs(sin(angles))) + 25
-y4 <- sin(angles)*(40*abs(sin(angles))) + 40
+x4 <- cos(angles)*(20*abs(sin(angles))) + 25
+y4 <- sin(angles)*(20*abs(sin(angles))) + 40
 polygon(x4,y4, col = "tomato")
 ```
 
