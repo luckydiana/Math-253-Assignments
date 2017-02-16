@@ -1,2 +1,237 @@
 # Topic 2 Exercises: Linear Regression
 
+## Diana Luc
+
+Question 3.6
+```{r}
+library(MASS)
+library(ISLR)
+
+#fix(Boston)
+names(Boston)
+
+lm.fit =lm(medv~lstat, data= Boston)
+
+lm.fit
+
+summary(lm.fit)
+
+names(lm.fit)
+
+coef(lm.fit)
+
+confint(lm.fit)
+
+predict(lm.fit, data.frame(lstat=(c(5,10,15))), interval = "confidence")
+
+predict(lm.fit, data.frame(lstat=(c(5,10,15))), interval = "prediction")
+
+plot(Boston$lstat, Boston$medv)
+abline(lm.fit)
+
+abline (lm.fit ,lwd =3)
+abline (lm.fit ,lwd=3,col ="red")
+plot(Boston$lstat , Boston$medv ,col="red")
+plot(Boston$lstat ,Boston$medv ,pch =20)
+plot(Boston$lstat ,Boston$medv ,pch ="+")
+plot(1:20,1:20,pch =1:20)
+
+par(mfrow=c(2,2))
+plot(lm.fit)
+
+plot(predict(lm.fit), residuals(lm.fit))
+plot(predict(lm.fit), rstudent(lm.fit))
+
+plot(hatvalues(lm.fit))
+which.max(hatvalues(lm.fit))
+```
+```{r}
+lm.fit=lm(medv~lstat + age, data=Boston)
+summary(lm.fit)
+
+lm.fit = lm(medv~., data=Boston)
+summary(lm.fit)
+```
+```{r}
+library(car)
+vif(lm.fit)
+```
+
+```{r}
+lm.fit1 = lm(medv~.-age, data=Boston)
+summary(lm.fit1)
+```
+```{r}
+summary(lm(medv~lstat*age,data=Boston))
+```
+
+```{r}
+lm.fit2 = lm(medv~lstat+I(lstat^2), data=Boston)
+summary(lm.fit2)
+
+lm.fit = lm(medv~lstat, data=Boston)
+anova(lm.fit,lm.fit2)
+
+par(mfrow = c(2,2))
+plot(lm.fit2)
+
+lm.fit5 = lm(medv~poly(lstat,5), data= Boston)
+summary(lm.fit5)
+```
+
+```{r}
+names(Carseats)
+
+lm.fit = lm(Sales~.+Income:Advertising + Price:Age, data = Carseats)
+summary(lm.fit)
+
+contrasts(Carseats$ShelveLoc)
+```
+
+```{r}
+LoadLibraries = function() {
+  library(ISLR)
+  library(MASS)
+  print("The libraries have been loaded.")
+}
+
+LoadLibraries
+
+LoadLibraries()
+```
+
+Question 3.7.13
+
+Part (a)
+```{r}
+set.seed(1)
+x <- rnorm(100)
+```
+
+Part (b and c)
+```{r}
+eps <- rnorm(100, sd = sqrt(0.25))
+
+y <- -1 + (0.5 * x) + eps
+length(y)
+```
+The length of y is 100. Beta0 is -1 and Beta1 is 0.5 in this linear model.
+
+Part (d)
+```{r}
+plot(x, y)
+```
+
+The relationship between x and y seem to look like they have a positive linear relationship. There definitely is "noise"/eps in the plot. 
+
+Part (e)
+```{r}
+model1 <- lm(y~x)
+summary(model1)
+```
+Beta0hat is -1.02 in this model which is really close to Beta0's value of 1. Same for Beta1hat is 0.499 is also similar to Beta1's value of 0.5. With the p-value being 4.583*10^-15 and that being less than 0.5, we can reject the null hypothesis for the alternative. 
+
+Part (f)
+```{r}
+plot(x, y)
+abline(model1, col = "tomato")
+abline(-1, 0.5, col = "green")
+legend("topleft", c("Least square", "Regression"), col = c("tomato", "green"), lty = c(1, 1))
+```
+
+Part (g)
+```{r}
+model2 <-  lm(y ~ x + I(x^2))
+summary(model2)
+```
+
+There is evidance that the quadratic term does not improve the model fit. The p-value for the term is 0.164 which is higher than 0.05, meaning that its effect is not significant. 
+
+Part (h)
+```{r}
+set.seed(1)
+x <- rnorm(100)
+eps <- rnorm(100, sd = 0.25)
+y <- -1 + 0.5 * x + eps
+plot(x, y)
+model5 <- lm(y ~ x)
+summary(model5)
+abline(model5, col = "red")
+abline(-1, 0.5, col = "blue")
+legend("topleft", c("Least square", "Regression"), col = c("red", "blue"), lty = c(1, 1))
+```
+
+We decreased the variance of the normal distribution used to generate the error term. Beta0hat and Beta1hat are closer to the coefficients we calculated previously. They are -1.01 and 0.499, respectively, which is close to -1 and 0.5. The adjusted R-squared as also increased to 0.77 which means that the model is becoming more linear. The plot lines look more together as well. The p-value also became lower by becoming less than 2.2e^-16. 
+
+Part (i)
+```{r}
+set.seed(1)
+x <- rnorm(100)
+eps <- rnorm(100, sd = 0.75)
+y <- -1 + 0.5 * x + eps
+plot(x, y)
+model6 <- lm(y ~ x)
+summary(model6)
+abline(model6, col = "red")
+abline(-1, 0.5, col = "blue")
+legend("topleft", c("Least square", "Regression"), col = c("red", "blue"), lty = c(1, 1))
+```
+
+We increased the variance of the normal distribution used to generate the error term. The coefficients are stil close to the values we calculated previously but compared to the other values, these current values are further away from what we calculated. Beta0hat and Beta1hat is now -1.03 and 0.499 respectively. The R-squared value for this model has decreased tremendously. It is now 0.273 which shows that the model is barely linear. Additionally there's now a space between the two plot lines. The p-value has also tremendously increased to become 1.479e^-08. 
+
+Part (j)
+```{r}
+confint(model1)
+
+confint(model5)
+
+confint(model6)
+```
+
+The confidence interval for the original data set for the x term is (0.39,0.61). The confidence interval for the noisier data set for the x term is (0.39,0.66). The confidence interval for the less noisy data set for the x term is (0.45,0.55). From these confidence intervals, we can see that the noiser the data set, the wider interval you have. On the other hand, the less noisy you have the more narrow of an interval you have. Also our calculated value of 0.5 for Beta1 is included in all three confidence intervals for the x term. 
+
+Reading Question 1
+
+The authors state that "This is clearly not true in Fig. 3.1" because in Fig 3.1, you can see as the x term increases, the error margins seem to increase as well. To se the formulas discussed on pg. 66, you need to assume that the errors for each observation are uncorrelated. As the Fig 3.1 shows, each of the observations are not randomly distributed. 
+
+Reading Question 2
+
+The authors state that "In this case we cannot even fit the multiple regression models using least squares" because in the case that you have too many predicators, when you try to solve for the coefficients, you will get multiple solutions and not a unique solution which is what least squares will have. 
+
+Question 3.7.3
+
+Part (a)
+Using the coefficients and constructing a least square line equation, we get: yhat = 50 + 20*GPA + 0.07*IQ + 35*Gender + (0.01*GPA)*IQ - (10*GPA) * Gender. 
+
+Adjusting for just males we get: yhat = 50 + 20*GPA + 0.07*IQ + (0.01*GPA)*IQ
+
+Adjusting for females we get: yhat = 85 + 10*GPA + 0.07*IQ + (0.01*GPA)*IQ.
+
+Using these two adjusted least square equations we can see that state iii. is true saying that for a fixed vlaue of IQ and GPA, males earn more on average than females provided that the GPA is high enough. This is true because males have a higher coefficient for GPA which would contribute more salary given that they have a high GPA. 
+
+Part (b)
+
+Using our adjusted equation for females: yhat = 85 + 10*GPA + 0.07*IQ + (0.01*GPA)*IQ. Plugging in the given values into the equation, we get: yhat = 85 + 10*110 + 0.07*110 + (0.01*4.0)*110 which equals 137.1. So the starting salary for females is $137,100.
+
+Part (c)
+
+This is false because to verify whether GPA and IQ have an impact on the model we would have to test whether these predictors are significant by looking at the p-values associated with them to see whether it is true or false. 
+
+Question 3.7.4 
+
+Part (a)
+
+I think the least squares line would be closer to the true regression line and I think that the cubic regression would be lower since we know that the true relationship between X and Y is linear. However, it'll be better to tell if we had training data to test it. 
+
+Part (b)
+
+I think the cubic regression would be better since it would overfit the data, but I don't think I can make a conclusive answer because you would need the test data to tell which RSS would be better. 
+
+Part (c)
+
+The RSS for the cubic regression would be lower then the linear regression because of the higher flexibility that a cubic regression brings. Since we're not sure of the relationship of X and Y, havinga  higher flexibility model would reduce the RSS for the training data.
+
+Part (d)
+
+There's not enough information to tell which RSS would be lower because we don't know the relationship between X and Y for certain. It only tells us that we don't know how far it is from linear, but if it was closer to linear, the linear regression would provide a lower RSS. On the other hand, if the relationship was closer to cubic, the cubic regression would provide a lower RSS. 
+
