@@ -1,8 +1,39 @@
 # In-Class Programming Activity, Day 7
 
-Your work goes here ...
+## Diana Luc
 
+```{r}
+vals <- rexp(10, rate = 0.01)
+vals
+```
 
+```{r}
+test200 <- sum(log(dexp(vals, rate = 0.005)))
+test200
+```
+
+```{r}
+LL_exp <- function(rate){
+  sum(log(dexp(vals, rate = rate)))
+}
+
+LL_exp(0.005)
+```
+```{r}
+rates <- runif(100, min= 0.005, max = 0.02)
+rates
+```
+```{r}
+results <- sapply(rates, LL_exp)
+plot((1/rates), results)
+```
+```{r}
+exp_results <- optimize(LL_exp,
+                        lower = 1/200, upper = 1/50,
+                        maximum = TRUE)
+
+exp_results
+```
 
 ## Test statements
 
