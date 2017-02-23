@@ -1,7 +1,50 @@
 # In-Class Programming Activity, Day 8
 
-Your work goes here ...
+## Diana Luc
 
+## Task 1
+```{r}
+x <- runif(100,min = 20, max = 70)
+y <- 5 + 3*x + 2*rnorm(100)
+
+My_data <- data.frame(x, y)
+
+plot(My_data)
+
+LL_line <- function(params) {
+  m <- params[1]
+  b <- params[2]
+  sigma <- params[3]
+  sum(log(dnorm(y - (m * x + b), sd = sigma)))
+}
+
+testA <- LL_line(c(3,5,2))
+testB <- LL_line(c(4,1,10))
+
+starting_params <- c(4, 1, 10)
+best <- optim(starting_params, LL_line, control=list(fnscale = -1))
+```
+
+## Task 2
+```{r}
+load(url("http://tiny.cc/dcf/Taxi_trips.rda"))
+
+taxi_likelihood <- function(value, data = Taxi_trips){
+  base_fare = value[1]
+  per_mile = value[2]
+  params = 1/value[3]
+  excess <- with(data,Taxi_trips$fare_amount - (base_fare + per_mile*Taxi_trips$trip_distance))
+  sum(log(dexp(excess,params) + 1e-5))
+}
+
+#starting_params <- c(2, 4, (1/3))
+#best <- nlm(taxi_likelihood, starting_params)
+
+best <- optim(c(2.3,2.,5),taxi_likelihood, control=list(fnscale = -1), data = Taxi_trips)
+
+plot(Taxi_trips$fare_amount~Taxi_trips$trip_distance)
+abline(a = best$par[1], b = best$par[2], col= "red")
+```
 
 
 ## Test statements
