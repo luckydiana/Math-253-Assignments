@@ -1,9 +1,96 @@
 # In-Class Programming Activity, Day 9
 
-Your work goes here ...
+## Diana Luc
 
+## Task 1
+```{r}
+poker_deck <- c(outer((10* 2:14), 1:4, "+"))
+```
 
+```{r}
+suits <- function(cards) {
+ return(cards%%10)
+}
 
+suits(poker_deck)
+
+ranks <- function(cards) {
+  return(cards%/%10)
+}
+
+ranks(poker_deck)
+```
+
+```{r}
+is_royal_flush <- function(five_cards) {
+  card_suits <- table(suits(five_cards))
+  min_suits <- min(card_suits)
+  max_suits <- max(card_suits)
+  card_ranks <- ranks(five_cards)
+  ifelse(min(card_ranks) == 10 && max(diff(sort(card_ranks))) == 1 && (min_suits == max_suits), TRUE, FALSE)
+}
+```
+
+```{r}
+is_straight_flush <- function(five_cards) {
+  card_suits <- table(suits(five_cards))
+  min_suits <- min(card_suits)
+  max_suits <- max(card_suits)
+  card_ranks <- ranks(five_cards)
+  ifelse(max(diff(sort(card_ranks))) == 1 && (min_suits == max_suits) && is_royal_flush(five_cards) == FALSE, TRUE, FALSE)
+}
+```
+
+```{r}
+is_four_of_a_kind <- function(five_cards) {
+  card_ranks <- table(ranks(five_cards))
+  ifelse(max(card_ranks) == 4, TRUE, FALSE)
+}
+```
+
+```{r}
+is_full_house <- function(five_cards) {
+  card_ranks <- table(ranks(five_cards))
+  ifelse(max(card_ranks) == 3 && min(card_ranks) == 2, TRUE, FALSE)
+}
+```
+
+```{r}
+is_flush <- function(five_cards) {
+  card_suits <- table(suits(five_cards))
+  min_suits <- min(card_suits)
+  max_suits <- max(card_suits)
+  ifelse((min_suits == max_suits) && is_royal_flush(five_cards) == FALSE && is_straight_flush(five_cards) == FALSE, TRUE, FALSE)
+}
+```
+
+```{r}
+is_straight <- function(five_cards) {
+  card_ranks <- ranks(five_cards)
+  ifelse(max(diff(sort(card_ranks))) == 1 && is_royal_flush(five_cards) == FALSE && is_straight_flush(five_cards) == FALSE, TRUE, FALSE)
+}
+```
+
+```{r}
+is_three_of_a_kind <- function(five_cards) {
+  card_ranks <- table(ranks(five_cards))
+  ifelse(max(card_ranks) == 3, TRUE, FALSE)
+}
+```
+
+```{r}
+is_two_pair <- function(five_cards) {
+  card_ranks <- table(ranks(five_cards))
+  ifelse(max(card_ranks) == 2, min(card_ranks) == 2, TRUE, FALSE)
+}
+```
+
+```{r}
+is_pair <- function(five_cards) {
+  card_ranks <- table(ranks(five_cards))
+  ifelse(max(card_ranks) == 2, TRUE, FALSE)
+}
+```
 ## Test statements
 
 ```{r}
