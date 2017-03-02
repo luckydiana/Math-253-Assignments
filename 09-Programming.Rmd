@@ -81,7 +81,7 @@ is_three_of_a_kind <- function(five_cards) {
 ```{r}
 is_two_pair <- function(five_cards) {
   card_ranks <- table(ranks(five_cards))
-  ifelse(max(card_ranks) == 2, min(card_ranks) == 2, TRUE, FALSE)
+  ifelse(max(card_ranks) == 2 && min(card_ranks) == 2, TRUE, FALSE)
 }
 ```
 
@@ -91,6 +91,48 @@ is_pair <- function(five_cards) {
   ifelse(max(card_ranks) == 2, TRUE, FALSE)
 }
 ```
+
+```{r}
+before_draw <- function(x) {
+  five_cards <- sample(poker_deck, 5)
+  if (is_royal_flush(five_cards)) {
+    return ("Royal Flush")
+  }
+  else if (is_straight_flush(five_cards)) {
+    return ("Straight Flush")
+  }
+  else if (is_four_of_a_kind(five_cards)) {
+    return ("Four of a Kind")
+  }
+  else if (is_full_house(five_cards))  {
+    return ("Full House")
+  }
+  else if (is_flush(five_cards))  {
+    return ("Flush")
+  }
+  else if (is_straight(five_cards)) {
+    return ("Straight")
+  }
+  else if (is_three_of_a_kind(five_cards))  {
+    return ("Three of a Kind")
+  }
+  else if (is_two_pair(five_cards))  {
+    return ("Two pairs")
+  }
+  else if (is_pair(five_cards)) {
+    return ("Pair")
+  }
+  else {
+    return ("Nothing")
+  }
+}
+```
+
+```{r}
+before_draw()
+table(replicate(10000,before_draw()))
+```
+
 ## Test statements
 
 ```{r}
