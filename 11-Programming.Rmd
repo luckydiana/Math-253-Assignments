@@ -1,9 +1,58 @@
 # In-Class Programming Activity, Day 11
 
-Your work goes here ...
+## Diana Luc
 
+```{r}
+Sigma <- cbind(c(1.0,-0.7), c(-0.7,1.0))
 
+Sigma_inv <- solve(Sigma)
 
+test_inverse <- Sigma %*% Sigma_inv
+```
+
+```{r}
+A <- chol(Sigma)
+A
+t(A)
+
+all(abs((t(A) %*% A - Sigma)) < 0.01)
+```
+
+```{r}
+x1 <- cbind(rnorm(10))
+x1
+
+x2 <- cbind(rnorm(10))
+x2
+
+X <- cbind(x1,x2)
+symM <- t(X) %*% X
+
+covM <- (t(X) %*% X) / nrow(X)
+covM
+```
+
+```{r}
+w1 <- cbind(rnorm(10000))
+
+w2 <- cbind(rnorm(10000))
+
+W <- cbind(w1,w2)
+
+W_cov <- (t(W) %*% W) / nrow(W)
+W_cov
+```
+
+```{r}
+A_inv <- chol(Sigma_inv)
+
+Y <- X %*% A_inv
+
+Y <- W %*% A
+all(abs(Y - W %*% A) < 0.01)
+
+plot(Y[,1] , Y[,2], col = rgb (0,0,0,.05))
+```
 ## Test statements
 
 ```{r}
