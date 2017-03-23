@@ -1,8 +1,52 @@
 # In-Class Programming Activity, Day 13
 
-Your work goes here ...
+## Diana Luc
+## March 22, 2017
 
+## A Function Framework
 
+```{r}
+k_fold1 <- function(formula, method = lm, data = mtcars, predfun = predict, k = 10) {
+  # do the calculations, 
+  sets <- (1:nrow(data) %% k) + 1
+  ## accumulator will be updated as you go through the loop
+  mspe <- numeric(k)
+  for (i in 1:k) {     
+    For_Testing <- data[i == sets,]
+    For_Training <- data[i != sets,]
+    mod <- lm(mpg ~ hp + wt + am, data=For_Training)
+    pred_vals <- predict(mod, newdata = For_Testing)
+    mspe[i] <- mean((For_Testing[["mpg"]] - pred_vals)^2 )
+  }
+  error_estimate <- mean(mspe)
+  # producing an estimate of error
+  return(error_estimate)
+}
+
+k_fold1()
+```
+
+## Generalizing the function
+
+```{r}
+k_fold <- function(formula, method = lm, data = mtcars, predfun = predict, k = 10) {
+  # do the calculations, 
+  sets <- (1:nrow(data) %% k) + 1
+  ## accumulator will be updated as you go through the loop
+  mspe <- numeric(k)
+  for (i in 1:k) {     
+    For_Testing <- data[i == sets,]
+    For_Training <- data[i != sets,]
+    mod <- method(formula, data=For_Training)
+    pred_vals <- predfun(mod, newdata = For_Testing)
+    mspe[i] <- mean((For_Testing[[as.character(formula[[2]])]] - pred_vals)^2 )
+  }
+  error_estimate <- mean(mspe)
+  # producing an estimate of error
+  return(error_estimate)
+}
+k_fold(formula = mpg ~ hp + wt + am, data=mtcars)
+```
 
 ## Test statements
 
