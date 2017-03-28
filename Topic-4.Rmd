@@ -1,2 +1,232 @@
 # Topic 4 Exercises: Classification
 
+## Diana Luc
+## March 21, 2017
+
+## Question 4.7.11
+
+Part (a)
+
+```{r}
+library(MASS)
+Auto <- read.csv("/home/local/MAC/dluc/Math-253-Assignment/Auto.csv", na.strings = "?")
+Auto <- na.omit(Auto)
+attach(Auto)
+
+mpg01 <- ifelse(mpg > median(mpg),1,0)
+Auto <- data.frame(Auto, mpg01)
+```
+
+Part (b)
+
+```{r}
+pairs(Auto)
+cor(Auto[,-9])
+```
+
+```{r}
+box1 <- boxplot(cylinders ~ mpg01, data = Auto, main = "Cylinders vs mpg01")
+
+box2 <- boxplot(displacement ~ mpg01, data = Auto, main = "Displacement vs mpg01")
+
+box3 <- boxplot(horsepower ~ mpg01, data = Auto, main = "Horsepower vs mpg01")
+
+box4 <- boxplot(weight ~ mpg01, data = Auto, main = "Weight vs mpg01")
+
+box5 <- boxplot(acceleration ~ mpg01, data = Auto, main = "Acceleration vs mpg01")
+
+box6 <- boxplot(year ~ mpg01, data = Auto, main = "Year vs mpg01")
+```
+
+Cylinders, displacement, horsepower, and weight look like they are most likely useful in predicting mpg01. They all are either correlated positively or negatively. 
+
+Part (c)
+
+```{r}
+train <- (year %% 2 == 0)
+Auto.train <- Auto[train,]
+Auto.test <- Auto[!train,]
+mpg01.test <- mpg01[!train]
+```
+
+Part (d)
+
+```{r}
+mod1 <- lda(mpg01 ~ cylinders + displacement + horsepower + weight, data = Auto.train)
+mod1
+
+pred1 <- predict(mod1, Auto.test)
+table(pred1$class, mpg01.test)
+
+mean(pred1$class != mpg01.test)
+```
+
+We have a test error rate of 12.63736%. 
+
+Part (e)
+
+```{r}
+mod2 <- qda(mpg01 ~ cylinders + displacement + horsepower + weight, data = Auto.train)
+mod2
+
+pred2 <- predict(mod2, Auto.test)
+table(pred2$class, mpg01.test)
+
+mean(pred2$class != mpg01.test) 
+```
+
+We have a test error rate of 13.18681%.
+
+Part (f)
+
+```{r}
+mod3 <- glm(mpg01 ~ cylinders + displacement + horsepower + weight, data = Auto.train, family = binomial)
+summary(mod3)
+
+pred3 <- predict(mod3, Auto.test, type = "response")
+npred3 <- rep(0, length(pred3))
+npred3[pred3 > 0.5] <- 1
+table(npred3, mpg01.test)
+
+mean(npred3 != mpg01.test) 
+```
+
+The test error rate is 12.08791%. 
+
+Part (g)
+
+```{r}
+# train.Auto <-cbind(cylinders, displacement, horsepower,weight)[train,]
+# test.Auto <-cbind(cylinders, displacement, horsepower,weight)[!train,]
+# train.mpg01 <- mpg01[train]
+# 
+# predknn <- knn(train.Auto, test.Auto, train.mpg01, k = 1)
+# table(predknn, mpg01.test)
+# mean(predknn, mpg01.test)
+#      
+# predknn <- knn(train.Auto, test.Auto, train.mpg01, k = 1)
+# table(predknn, mpg01.test)
+# mean(predknn, mpg01.test)
+#      
+# predknn <- knn(train.Auto, test.Auto, train.mpg01, k = 1)
+# table(predknn, mpg01.test)
+# mean(predknn, mpg01.test)
+```
+
+Part (g) does not work because it keeps saying unused argument for train.mpg01, but it defined in that same function box. So I don't know what's wrong since we couldn't get knn to work in class either. 
+
+## Question 4.7.13
+
+```{r}
+attach(Boston)
+crime <- rep(0, length(crim))
+crime[crim > median(crim)] <- 1
+Boston <- data.frame(Boston, crime)
+
+train <- 1:(length(crim) / 2)
+test <- (length(crim) / 2 + 1):length(crim)
+Boston.train <- Boston[train, ]
+Boston.test <- Boston[test, ]
+crime.test <- crime[test]
+```
+
+#Logistic Regression
+
+```{r}
+logfit=glm(crime~lstat+rm+zn+nox+dis+rad+ptratio+black+medv+age+chas+indus+tax, data=Boston.train)
+summary(logfit)
+```
+
+Variables nox, rad, ptratio, black, medv, and age look significant. 
+
+```{r}
+logprobs = predict(logfit,Boston.test,type = "response")
+logprob = rep(0,nrow(Boston.test))
+logprob[logprobs > 0.5] = 1
+table(logprob,Boston.test$crime)
+mean(logprob == Boston.test$crime)
+```
+
+The test error rate is 86.5% which is really high.
+
+```{r}
+logfit=glm(crime~nox+rad+medv+age+tax+ptratio, data=Boston.train)
+summary(logfit)
+logprobs = predict(logfit,Boston.test,type = "response")
+logprob = rep(0,nrow(Boston.test))
+logprob[logprobs > 0.5] = 1
+table(logprob,Boston.test$crime)
+mean(logprob == Boston.test$crime)
+```
+
+The test error rate for this is 88% which is even higher. 
+
+```{r}
+logfit=glm(crime~nox+rad+medv+age+tax, data=Boston.train)
+summary(logfit)
+logprobs = predict(logfit,Boston.test,type = "response")
+logprob = rep(0,nrow(Boston.test))
+logprob[logprobs > 0.5] = 1
+table(logprob,Boston.test$crime)
+mean(logprob == Boston.test$crime)
+```
+
+The test error rate for this is 90%, so it seems the more variables added helps bring down the test error rate. 
+
+#LDA
+
+```{r}
+ldafit=lda(crime~nox+rad+medv+age+tax+ptratio, data=Boston.train)
+ldafit
+ldapred=predict(ldafit,Boston.test)$class
+table(ldapred,Boston.test$crime)
+mean(ldapred==Boston.test$crime)
+```
+
+The test error rate for this is 88% similar to the logistic regression of this. 
+
+```{r}
+ldafit=lda(crime~nox+rad+medv+age+tax, data=Boston.train)
+ldafit
+ldapred=predict(ldafit,Boston.test)$class
+table(ldapred,Boston.test$crime)
+mean(ldapred==Boston.test$crime)
+```
+
+The test error for this is 90% which is similar to its logistic regression as well. 
+
+#QDA
+
+```{r}
+qdafit=qda(crime~nox+rad+medv+age+tax, data=Boston.train)
+qdafit
+qdapred=predict(qdafit,Boston.test)$class
+table(qdapred,Boston.test$crime)
+mean(qdapred==Boston.test$crime)
+```
+
+The test error rate is 38% which is the lowest test error rate so far. 
+
+```{r}
+qdafit = qda(crime~lstat+rm+zn+nox+dis+rad+ptratio+black+medv+age+chas+indus+tax, data=Boston.train)
+qdafit
+qdapred=predict(qdafit,Boston.test)$class
+table(qdapred,Boston.test$crime)
+mean(qdapred==Boston.test$crime)
+```
+
+The test error rate for this is 34.7% which is even lower. It seems that using qda to analyze the data is a better fit because it provides a lower test error rate. 
+
+## Question 4.7.1
+
+To show that equation 4.2 equals to 4.3, if we let the right hand side of equation 4.2 = P(x), we can begin by dividing P(x) by 1-P(x), where P(x) is the right hand side of the equation in equation 4.2. Then if we assign an variable such as w to equal e^(beta0 + beta1X) as we simplyify we should see that we will end up with w which is equal to e^(beta0 + beta1X), the right hand side of equation 4.3. 
+
+## Question 4.7.8
+
+I would choose the logistic regression because if we pretended we had a dataset with 1000 examples, there are 500 in the training data and 500 in the testing data. With KNN and a K = 1, with an average error of 18% this means that the error is coming from the testing data and not the training data. So it isn't really 180/1000, but rather it'll be 180/500 which is equivalent to a 36% error. 
+
+## Question 4.7.9
+
+a) Using p(x)/(1-p(x)) = 0.37, we can turn this into p(x) = 0.37/(1+0.37) which is equal to 0.27. This means that 27% of people will indeed default on their credit card payments.
+
+b) With a p(x) = 0.16, we can plug this into the equation p(x)/(1-p(x)) which would give us 0.16/(1-0.16) = 0.19 meaning that there is a 19% chance that the individual will default on her credit card payment. 
