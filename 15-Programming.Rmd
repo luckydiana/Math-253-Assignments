@@ -77,6 +77,10 @@ x1r2 <- cumsum(sing_vals1^2)/sum(sing_vals1^2)
 sing_vals2 <- svd(X_corr)$d
 x2r2 <- cumsum(sing_vals2^2)/sum(sing_vals2^2)
 
+plot(xr2, col="red")
+lines(x1r2, col= "blue")
+lines(x2r2, col = "green")
+
 n99 <- which(xr2 > 0.99)[[1]]
 n99_rand <- which(x1r2 > 0.99)[[1]]
 n99_corr <- which(x2r2 > 0.99)[[1]]
