@@ -143,22 +143,25 @@ $(document).ready(function () {
   preds_in &lt;- predict(GenLog, newdata = GenTrain)
   preds_out &lt;- predict(GenLog,newdata = GenTest)
   
-  glm_in &lt;- predict.glmnet(GenRidge, newx = GenTrain)
-  glm_out &lt;- predict.glmnet(GenRidge, newx = GenTest)
+  glm_in &lt;- predict.glmnet(GenRidge, newx = as.matrix(GenTrain))
+  glm_out &lt;- predict.glmnet(GenRidge, newx = as.matrix(GenTest))
   
-  ols_in &lt;- mean((preds_in ~ responses[ind])^2)
-  ols_out &lt;- mean((preds_out~responses[ind])^2)
   
-  glm_ols_in &lt;- mean((glm_in ~ responses[ind])^2)
-  glm_ols_out &lt;- mean((glm_out ~ responses[-ind])^2)
+  ols_in &lt;- mean((preds_in - responses[ind])^2)
+  ols_out &lt;- mean((preds_out - responses[-ind])^2)
   
-  Shrink_results &lt;- list(lambda = lambda, ols_in = ols_in, ols_out = ols_out, glm_in = glm_in, glm_out = glm_out)
+  ridge_in &lt;- mean((glm_in - responses[ind])^2)
+  ridge_out &lt;- mean((glm_out - responses[-ind])^2)
+  
+  list(lambda = lambda, ols_in = ols_in, ols_out = ols_out, ridge_in = ridge_in, ridge_out = ridge_out)
   
 }
 
-#compare_ols_ridge(GenCont$Phenotypes, GenCont[,-1]) 
-
-#Above command pulls a error that I don't know how to solve. It says predication from a rank-deficient fit may be misleading predication from a rank-deficient fit may be misleading. </code></pre>
+Shrink_results &lt;- compare_ols_ridge(GenCont$Phenotypes, GenCont[,-1]) </code></pre>
+<pre><code>## Warning in predict.lm(GenLog, newdata = GenTrain): prediction from a rank-
+## deficient fit may be misleading</code></pre>
+<pre><code>## Warning in predict.lm(GenLog, newdata = GenTest): prediction from a rank-
+## deficient fit may be misleading</code></pre>
 </div>
 <div id="test-statements" class="section level2">
 <h2>Test statements</h2>
@@ -168,14 +171,14 @@ $(document).ready(function () {
 <pre><code>## Loading required package: lazyeval</code></pre>
 <pre><code>## passed: object &quot;compare_ols_ridge&quot; exists
 ## passed: object &quot;GenCont&quot; exists
-## FAILED: object &quot;Shrink_results&quot; doesn't exist.
+## passed: object &quot;Shrink_results&quot; exists
 ## passed: &quot;responses&quot; %in% names(formals(compare_ols_ridge))
 ## passed: &quot;predictors&quot; %in% names(formals(compare_ols_ridge))
 ## passed: &quot;lambda&quot; %in% names(formals(compare_ols_ridge))
-## ERROR when running  check(TRUE, &quot;ols_in&quot; %in% names(Shrink_results))
-## ERROR when running  check(TRUE, &quot;ridge_out&quot; %in% names(Shrink_results))
-## ERROR when running  check(about(1, pm = 0.01), Shrink_results[[&quot;lambda&quot;]])
-## ERROR when running  check(about(3.5, pm = 1.5), Shrink_results[[&quot;ols_out&quot;]])</code></pre>
+## passed: &quot;ols_in&quot; %in% names(Shrink_results)
+## passed: &quot;ridge_out&quot; %in% names(Shrink_results)
+## passed: Shrink_results[[&quot;lambda&quot;]]
+## passed: Shrink_results[[&quot;ols_out&quot;]]</code></pre>
 </div>
 </div>
 

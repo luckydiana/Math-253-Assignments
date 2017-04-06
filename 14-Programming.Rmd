@@ -21,22 +21,22 @@ compare_ols_ridge <- function(responses, predictors, lambda=1){
   preds_in <- predict(GenLog, newdata = GenTrain)
   preds_out <- predict(GenLog,newdata = GenTest)
   
-  glm_in <- predict.glmnet(GenRidge, newx = GenTrain)
-  glm_out <- predict.glmnet(GenRidge, newx = GenTest)
+  glm_in <- predict.glmnet(GenRidge, newx = as.matrix(GenTrain))
+  glm_out <- predict.glmnet(GenRidge, newx = as.matrix(GenTest))
   
-  ols_in <- mean((preds_in ~ responses[ind])^2)
-  ols_out <- mean((preds_out~responses[ind])^2)
   
-  glm_ols_in <- mean((glm_in ~ responses[ind])^2)
-  glm_ols_out <- mean((glm_out ~ responses[-ind])^2)
+  ols_in <- mean((preds_in - responses[ind])^2)
+  ols_out <- mean((preds_out - responses[-ind])^2)
   
-  Shrink_results <- list(lambda = lambda, ols_in = ols_in, ols_out = ols_out, glm_in = glm_in, glm_out = glm_out)
+  ridge_in <- mean((glm_in - responses[ind])^2)
+  ridge_out <- mean((glm_out - responses[-ind])^2)
+  
+  list(lambda = lambda, ols_in = ols_in, ols_out = ols_out, ridge_in = ridge_in, ridge_out = ridge_out)
   
 }
 
-#compare_ols_ridge(GenCont$Phenotypes, GenCont[,-1]) 
+Shrink_results <- compare_ols_ridge(GenCont$Phenotypes, GenCont[,-1]) 
 
-#Above command pulls a error that I don't know how to solve. It says predication from a rank-deficient fit may be misleading predication from a rank-deficient fit may be misleading. 
 ```
 
 
