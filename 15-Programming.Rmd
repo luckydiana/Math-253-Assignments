@@ -1,8 +1,95 @@
 # In-Class Programming Activity, Day 15
 
-Your work goes here ...
+## Diana Luc
+## April 4, 2017
+
+```{r}
+#download.file("http://tiny.cc/dcf/mona.rda", destfile = "mona.rda")
+load("mona.rda")
+```
+
+```{r}
+X <- t(mona) - mean(mona[])
+
+X_rand <- matrix(rnorm(nrow(mona)*ncol(mona) ,mean = 0, sd = 1), ncol(mona), nrow(mona))
+
+X_corr <- X_rand %*% chol(var(X))
+```
+
+## Sparse beta
+
+```{r}
+beta <- rep(0,191)
+sample_beta <- sample(1:191, 16, replace = FALSE)
+
+for (i in 1:16) {
+  rand_num <- sample (c(2,5,-3,-4), 1)
+  beta[sample_beta[i]] = rand_num
+}
+```
 
 
+## The output
+
+```{r}
+Y_pure <- X %*% beta
+
+varY <- var(Y_pure)
+
+Y_real <- X %*% beta + rnorm(nrow(X), mean = 0, sd = sqrt(0.1*varY))
+```
+
+## Least squares
+
+```{r}
+mod1 <- lm(Y_pure~X)
+beta_hat_pure <- coef(mod1)
+
+plot(beta_hat_pure[-1],beta)
+```
+
+```{r}
+mod2 <- lm(Y_real~X)
+beta_hat_real <- coef(mod2)
+
+plot(beta_hat_real[-1],beta)
+```
+
+You would be able to detect from beta_hat_real that beta is sparese because there's a bunch of points along the 0 from beta. 
+
+## The lasso estimator
+
+```{r}
+library(glmnet)
+lasso_mod <- cv.glmnet(X, Y_real, alpha=1)
+beta_lasso <- predict(lasso_mod, type = "coefficients", s = lasso_mod$lambda.min)
+```
+
+## Principal components
+
+```{r}
+sing_vals <- svd(X)$d
+xr2 <- cumsum(sing_vals^2)/sum(sing_vals^2)
+
+sing_vals1 <- svd(X_rand)$d
+x1r2 <- cumsum(sing_vals1^2)/sum(sing_vals1^2)
+
+sing_vals2 <- svd(X_corr)$d
+x2r2 <- cumsum(sing_vals2^2)/sum(sing_vals2^2)
+
+n99 <- which(xr2 > 0.99)[[1]]
+n99_rand <- which(x1r2 > 0.99)[[1]]
+n99_corr <- which(x2r2 > 0.99)[[1]]
+```
+
+```{r}
+library(pls)
+pcr.fit <- pcr(Y_real ~ X, scale = TRUE, validation="CV") 
+r2pcr <- R2(pcr.fit)
+plot(r2pcr)
+```
+
+About 20 components are needed to get a R^2 of 0.85. 
 
 ## Test statements
 
