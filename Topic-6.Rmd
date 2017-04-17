@@ -1,2 +1,150 @@
 # Topic 6 Exercises: Selecting Model Terms
 
+## Diana Luc
+
+## Question 6.8.1
+
+(a) The best subset selection with k predicators will have the smallest training RSS because it'll choose a model that has the smallest training RSS with k prediactors whereas the forward step-wise and backward step-wise models would choose models that have the smallest training RSS at certain k's only.
+
+(b) The model with k predicators that will have the smallest test RSS is probably the backward-selection model because it's less inflexible than the other two models.
+
+(c) 
+
+i. True 
+ii. True
+iii. False
+iv. False
+v. False 
+
+## Question 6.8.2
+
+(a) iii. is correct because a lasso model is less flexibile which helps lower the chance of overfitting and lowering the variance. So it'll give a better predication when its increase in bais is less than the decrease in variance. 
+
+(b) iii. is correct because similar to the lasso model, a ridge regression model is more restrictive which also lowers the chance of overfitting and the variance so it will give a better predication. 
+
+(c) ii. is correct because non-linear methods are more flexible than least squares so they'll give a better predication when their increase in variance is less than their decrease in bias.
+
+## Question 6.8.9
+
+(a)
+
+```{r}
+library(ISLR)
+data(College)
+set.seed(1)
+train = sample(1:dim(College)[1], dim(College)[1] / 2)
+test <- -train
+College.train <- College[train, ]
+College.test <- College[test, ]
+```
+
+(b)
+
+```{r}
+mod <- lm(Apps~., data=College.train)
+mod1 <- predict(mod, College.test)
+mean((mod1 - College.test$Apps)^2)
+```
+
+The test error is 1108531. 
+
+(c)
+
+```{r}
+library(glmnet)
+ridgetrain <- model.matrix(Apps ~ ., data= College.train)
+
+ridgetest <- model.matrix(Apps ~ ., data = College.test)
+
+grid <- 10^seq(4,-2,length= 100)
+
+ridgemod <- glmnet(ridgetrain, College.train$Apps, alpha = 0, lambda = grid, thresh = 1e-12)
+
+cvmod <- cv.glmnet(ridgetrain, College.train$Apps, alpha = 0, lambda = grid, thresh = 1e-12)
+
+lamridge <- cvmod$lambda.min
+lamridge
+
+predridge <- predict(ridgemod, s = lamridge, newx = ridgetest)
+
+mean((predridge - College.test$Apps)^2)
+```
+
+The test error is 1108512, which is a little bit better than least squares. 
+
+(d)
+
+```{r}
+lassomod <- glmnet(ridgetrain, College.train$Apps, alpha = 1, lambda = grid, thresh = 1e-12)
+
+lassocv <- cv.glmnet (ridgetrain, College.train$Apps, alpha = 1, lambda = grid, thresh = 1e-12)
+
+lassolam <- lassocv$lambda.min
+lassolam
+
+predlasso <- predict (lassomod, s= lassolam, newx = ridgetest)
+
+mean((predlasso - College.test$Apps)^2)
+
+predict(lassomod, s = lassolam, type = "coefficients")
+```
+
+The test error is 1038776 which is lower than the ridge regression and least squares. The number of non-zero coefficient estimates are 15. 
+
+(e)
+
+```{r}
+library(pls)
+
+pcrmod <- pcr(Apps ~ ., data= College.train, scale = TRUE, validation = "CV")
+
+validationplot(pcrmod, val.type = "MSEP")
+
+predpcr <- predict(pcrmod, College.test, ncomp = 10)
+
+mean((predpcr - College.test$Apps)^2)
+```
+
+The test error is 1505718 which is higher than least squares. 
+
+(f)
+
+```{r}
+plsmod <- plsr(Apps ~ ., data=College.train, scale = TRUE, validation = "CV")
+
+validationplot(plsmod, val.type = "MSEP")
+
+predpls <- predict(plsmod, College.test, ncomp = 10)
+
+mean((predpls - College.test$Apps)^2)
+```
+
+The test error is 1134531 which is higher than least squares. 
+
+(g)
+
+```{r}
+test.avg <- mean(College.test$Apps)
+
+lmr2 <- 1 - mean((mod1 - College.test$Apps)^2) / mean((test.avg - College.test$Apps)^2)
+
+lmr2
+
+ridger2 <- 1 - mean((predridge - College.test$Apps)^2) / mean((test.avg - College.test$Apps)^2)
+
+ridger2
+
+lassor2 <- 1 - mean((predlasso - College.test$Apps)^2) / mean((test.avg - College.test$Apps)^2)
+
+lassor2
+
+pcrr2 <- 1 - mean((predpcr - College.test$Apps)^2) / mean((test.avg - College.test$Apps)^2)
+
+pcrr2
+
+plsr2 <- 1 - mean((predpls - College.test$Apps)^2) / mean((test.avg - College.test$Apps)^2)
+
+plsr2
+```
+
+The test R^2 value for least squares is 0.9010682, test R^2 value for ridge is 0.9010698, test R^2 value for lasso is 0.9072935, test R^2 value for pcr is 0.865621, test R^2 value for pls is 0.8987478. The model PCR has the lowest R^2 value compared to the other models. 
