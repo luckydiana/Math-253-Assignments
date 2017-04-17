@@ -1,2 +1,123 @@
 # Topic 7 Exercises: Nonlinear regression
 
+## Diana Luc
+
+## Question 7.9.3
+
+```{r}
+x <- -2:2
+y= 1+ x + -2 * (x-1)^2 * I(x>1)
+plot (x,y)
+```
+
+When x goes from -2 to 1, the slope is linear which shows the equation y = 1+x. When x goes from 1 to 2, the curve is quadratic and has the equation: y= 1 + x-2(x-1)^2.
+
+
+## Question 7.9.4
+
+```{r}
+x <- -2:2
+y= c(1+ 0 + 0, # x = -2
+     1+ 0 +0, # x = -1
+     1+ 1 + 0, # x = 0
+     1+ (1-0) + 0, # x = 1
+     1+ (1-1) + 0 # x = 2
+     )
+plot(x,y)
+```
+
+From x = -2 to 1, it looks like a step-wise function because from -2 to 1 it's constant lines. From x = -2 to -1, the equation would be y= 1 and from x= 0 to 1, the equation would be y= 2. From x=1 to 2, however, the curve is linear with the equation y= 3-x. 
+
+## Question 7.9.5
+
+(a) As lambda approaches infinity, g2 will have a smaller training RSS because g is raised to a higher number so it'll be more flexible.
+
+(b) As lambda approaches infinity, g1 will have a smaller testing RSS because g2 would most likely overfit the data because it's more flexible. 
+
+(c) When lambda = 0, g1 and g2 would equal each other so they'll have the same training and testing RSS. 
+
+## Question 7.9.11
+
+(a)
+
+```{r}
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+b0 <- 1
+b1 <- 1
+b2 <- 1
+eps <- rnorm(100, sd = 1)
+y <- b0 + b1*x + b2*x2 + eps
+plot(y)
+```
+
+(b)
+
+```{r}
+bh1 <- 2
+```
+
+(c)
+
+```{r}
+a <- y - bh1 * x1
+beta2 <- lm(a~x2)$coef[2]
+```
+
+(d)
+
+```{r}
+bh2 <- 2
+a<- y-bh2 * x2
+beta1 <- lm(a~x1)$coef[2]
+```
+
+(e)
+
+```{r}
+bh0 <- bh1 <- bh2 <- rep(0, 1000)
+for (i in 1:1000) {
+  a <- y - bh1[i] * x1
+  bh2[i] <- lm(a ~ x2)$coef[2]
+  a <- y - bh2[i] * x2
+  bh0[i] <- lm(a ~ x1)$coef[1]
+  bh1[i+1] <- lm(a ~ x1)$coef[2]
+}
+
+require(ggplot2)
+require(reshape2)
+
+grp <- data.frame(Iteration = 1:1000, bh0, bh1=bh1[-1], bh2)
+grp1 <- melt(grp, id.vars = "Iteration")
+
+ggplot(grp1, aes(x= Iteration, y= value, group=variable, col = variable)) + geom_line(size = 2) 
+```
+
+(f)
+
+```{r}
+mod <- lm(y ~ x1 + x2)
+coef(mod)
+
+plot(bh0, type="l", col="red", lwd=2, xlab="Iterations", 
+     ylab="beta estimates", ylim=c(-5,10))
+
+lines(bh1[-1], col="green")
+lines(bh2, col="blue")
+
+abline(h=coef(mod)[1], lty="dashed")
+abline(h=coef(mod)[2], lty="dashed")
+abline(h=coef(mod)[3], lty="dashed")
+
+legend(x=600,y=9.7, c("bhat_0", "bhat_1", "bhat_2", "multiple regression"),
+       lty = c(1,1,1,2), 
+       col = c("red","green","blue","gray"))
+```
+
+(g)
+
+```{r}
+head(grp)
+```
+
+One iteration is enough to get a decent fit because starting at the second iteration, the estimates are all the same. 
