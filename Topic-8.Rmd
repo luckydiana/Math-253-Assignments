@@ -1,2 +1,146 @@
 # Topic 8 Exercises: Tree-based models
 
+## Diana Luc
+
+## Question 8.4.1
+
+```{r}
+par(xpd = NA)
+plot(NA, NA, type = "n", xlim = c(0, 100), ylim = c(0, 100), xlab = "X", ylab = "Y")
+
+lines(x = c(40, 40), y = c(0, 100))
+text(x = 40, y = 108, labels = c("t1"), col = "red")
+
+lines(x = c(0, 40), y = c(75, 75))
+text(x = -8, y = 75, labels = c("t2"), col = "red")
+
+lines(x = c(75, 75), y = c(0, 100))
+text(x = 75, y = 108, labels = c("t3"), col = "red")
+
+lines(x = c(20, 20), y = c(0, 75))
+text(x = 20, y = 80, labels = c("t4"), col = "red")
+
+lines(x = c(75, 100), y = c(25, 25))
+text(x = 70, y = 25, labels = c("t5"), col = "red")
+
+text(x = (40 + 75)/2, y = 50, labels = c("R1"))
+
+text(x = 20, y = (100 + 75)/2, labels = c("R2"))
+
+text(x = (75 + 100)/2, y = (100 + 25)/2, labels = c("R3"))
+
+text(x = (75 + 100)/2, y = 25/2, labels = c("R4"))
+
+text(x = 30, y = 75/2, labels = c("R5"))
+
+text(x = 10, y = 75/2, labels = c("R6"))
+```
+
+## Question 8.4.2
+
+To begin, we can let fhat(x) = 0 and ri = yi. fhat(x) will equal to 1/lambda * f1*(x1). If we left fhat(x) = lambdafhat1(x) and ri = yi-lambda*fhat1(xi) then we 'll get that fhat2(x) will also equal 1/lambdaf2(x2). To maximize this, we know that fhat(x) = lambdafhat1(x) + lambdafhat2(x) and that ri = yi - lambdafhat1(x) - lambdafhat2(x) which gets us to our model of the form. 
+
+## Question 8.4.3
+
+```{r}
+p = seq(0,1,0.01)
+gini = p * (1-p) * 2
+entropy = -(p*log(p) + (1-p) * log(1-p))
+classerror = 1-pmax(p, 1-p)
+matplot(p, cbind(gini,entropy,classerror))
+```
+
+The red curve is entropy. The black curve is gini index and the green curve is class error. 
+
+## Question 8.4.4
+
+(a) I can't sketch it out on R, but the branching would display that if X1 >= 1, then 5 otherwise X2 >= 1 then 15. If X1 < 0 then 3, otherwise X2 <0 is 10 else all is 0. 
+
+(b)
+
+```{r}
+par(xpd = NA)
+plot(NA, NA, type = "n", xlim = c(-2, 2), ylim = c(-3, 3), xlab = "X1", ylab = "X2")
+
+lines(x = c(-2, 2), y = c(1, 1))
+
+lines(x = c(1, 1), y = c(-3, 1))
+text(x = (-2 + 1)/2, y = -1, labels = c(-1.8))
+
+text(x = 1.5, y = -1, labels = c(0.63))
+
+lines(x = c(-2, 2), y = c(2, 2))
+text(x = 0, y = 2.5, labels = c(2.49))
+
+lines(x = c(0, 0), y = c(1, 2))
+text(x = -1, y = 1.5, labels = c(-1.06))
+
+text(x = 1, y = 1.5, labels = c(0.21))
+```
+
+## Question 8.4.5
+
+With the majority vote approach, red would be more likely because based on the data given, there are 6 data points that show the probability of red being 50% or higher. So red would be 6/10, and have the majority compared to green. However, with the average probability, it would be green because when you average the data given, you get a probability of 0.45 which is less than 50% so it wouldn't be red but instead be green. 
+
+## Question 8.4.12
+
+```{r}
+library(dplyr)
+library(ISLR)
+set.seed(1)
+df <- tbl_df(College)
+N <- dim(df)[1]
+p <- dim(df)[2]-1
+train_sample <- sample(1:N, 2*N/3)
+train <- df[train_sample,]
+test <- df[-train_sample,]
+```
+
+Boosting
+
+```{r}
+library(gbm)
+lambdas <- seq(0.2, 4, by = 0.1)
+test_errors <- sapply(lambdas, function(i){
+  boost <- gbm(train$Grad.Rate ~ ., data = train, distribution = "gaussian", n.trees = 50, shrinkage = lambdas[i])
+  test_pred <- predict(boost, test, n.trees=50)
+  mean((test$Grad.Rate - test_pred)^2)
+})
+
+min(test_errors)
+lambdas[which.min(test_errors)]
+```
+
+Bagging
+
+```{r}
+library(randomForest)
+bagging <- randomForest(train$Grad.Rate ~.,data = train, importance = T, mtry = p, ntree = 500)
+bagpred <- predict(bagging,test)
+mean((bagpred-test$Grad.Rate)^2)
+```
+
+Random Forests 
+
+```{r}
+MSE_list <- sapply(1:(p-1), function(i){
+  ranFor <- randomForest(train$Grad.Rate ~ ., data = train, importance = T, mtry = i, ntree = 500)
+  ranForpred <- predict(ranFor, test)
+  mean((ranForpred - test$Grad.Rate)^2)
+})
+
+minNbrTrees <- which.min(MSE_list)
+minNbrTrees
+min(MSE_list)
+```
+
+Linear Regression
+
+```{r}
+mod1 <- lm(Grad.Rate ~ ., data = train)
+modpred <- predict(mod1, test)
+mean((modpred - test$Grad.Rate)^2)
+```
+
+
+The MSE for linear regression is 187.91. Only boosting was relatively close with a MSE of 185.6. Random forests and bagging gave MSEs of 194.99 and 196.26, respectively. So it seems that boosting was the best performance since it was pretty accurate to the linear regression.
